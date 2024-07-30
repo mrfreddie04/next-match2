@@ -1,10 +1,15 @@
+'use server';
+
 import React from 'react';
 import { Navbar, NavbarBrand, NavbarContent, Button } from "@nextui-org/react";
 import Link from 'next/link';
 import { GiMatchTip } from 'react-icons/gi';
 import NavLink from './NavLink';
+import { auth } from '@/auth';
+import UserMenu from './UserMenu';
 
-export default function TopNav() {
+export default async function TopNav() {
+  const session = await auth();
   
   return (
     <Navbar 
@@ -21,12 +26,16 @@ export default function TopNav() {
       </NavbarBrand>
       <NavbarContent justify="center">
         <NavLink label="Matches" href="/members"/>
-        <NavLink label="Links" href="/lists"/>
+        <NavLink label="Lists" href="/lists"/>
         <NavLink label="Messages" href="/messages"/>
       </NavbarContent>
       <NavbarContent justify="end">
-        <Button variant="bordered" className='text-white' as={Link} href="/login">Login</Button>
-        <Button variant="bordered" className='text-white' as={Link} href="/register">Register</Button>
+        { session?.user ? <UserMenu user={session.user}/> : (
+          <>
+            <Button variant="bordered" className='text-white' as={Link} href="/login">Login</Button>
+            <Button variant="bordered" className='text-white' as={Link} href="/register">Register</Button>
+          </>
+        )}
       </NavbarContent>
     </Navbar>  
   )
