@@ -15,7 +15,7 @@ export default auth((req) => {
   const isPublic = publicRoutes.includes(nextUrl.pathname);
   const isAuth = authRoutes.includes(nextUrl.pathname);
 
-  console.log("STATUS", nextUrl.pathname, isLoggedIn, isPublic, isAuth);
+  //console.log("STATUS", nextUrl.pathname, isLoggedIn, isPublic, isAuth);
 
   if(isAuth) {
     //console.log("Redirect /members")

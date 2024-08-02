@@ -115,3 +115,4 @@ export async function getUserById(id: string) {
     where: { id: id }
   });
 }
+
