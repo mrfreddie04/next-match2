@@ -16,13 +16,13 @@ export async function getMembers(): Promise<Member[] | null> {
 
     return await prisma.member.findMany({
       where: { 
-        gender: member.gender === "female" ? "male" : "female",
+        //gender: member.gender === "female" ? "male" : "female",
         userId: { not: userId }
       }
     })
   } catch(e) {
     console.log(e);
-    throw e;
+    //throw e;
     return null;
   }
 }  

@@ -1,7 +1,23 @@
 import React from 'react'
+import ListsTab from './ListsTab'
+import { getCurrentUserLikeIds, getCurrentUserLikedMembers } from '../actions/likeActions';
+import { LikeType } from '@/types';
 
-export default function ListsPage() {
+type Props = {
+  searchParams: {
+    type: string
+  }
+}
+
+export default async function ListsPage({searchParams}: Props) {
+  //console.log("Lists Page",searchParams.type);
+
+  const likeIds = await getCurrentUserLikeIds();
+  const members = await getCurrentUserLikedMembers(searchParams.type);
+
   return (
-    <div>Lists</div>
+    <div>
+      <ListsTab members={members} likeIds={likeIds}/>
+    </div>
   )
 }
