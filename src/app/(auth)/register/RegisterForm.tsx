@@ -2,12 +2,13 @@
 
 import React from 'react';
 import { registerSchema, RegisterSchema, RegisterFields} from "@/lib/schemas/registerSchema";
-import { SubmitHandler, useForm } from 'react-hook-form';
+import { Path, SubmitHandler, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Button, Card, CardBody, CardHeader, Input } from '@nextui-org/react';
 import { GiPadlock } from 'react-icons/gi';
 import { registerUser } from '@/app/actions/authActions';
 import { ZodIssue } from 'zod';
+import { handleFormServerErrors } from '@/lib/utils';
 
 export default function RegisterForm() {
   const { register, handleSubmit, setError, formState: {errors, isValid, isSubmitting} } = useForm<RegisterSchema>({
@@ -22,14 +23,15 @@ export default function RegisterForm() {
       console.log("User registered successfully");
     }
     if(result.status === "error") {
-      if(Array.isArray(result.error)) {
-        result.error.forEach( (e: ZodIssue) => {
-          const fieldName = e.path.join(".") as RegisterFields;
-          setError(fieldName, {message: e.message});
-        });
-      } else if(typeof result.error === "string") {
-        setError("root.serverError", {message:result.error});
-      }
+      handleFormServerErrors(result, setError);
+      // if(Array.isArray(result.error)) {
+      //   result.error.forEach( (e: ZodIssue) => {
+      //     const fieldName = e.path.join(".") as Path<RegisterSchema>;
+      //     setError(fieldName, {message: e.message});
+      //   });
+      // } else if(typeof result.error === "string") {
+      //   setError("root.serverError", {message:result.error});
+      // }
     }
 
   }

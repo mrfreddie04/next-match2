@@ -10,6 +10,7 @@ export default {
   providers: [
     //GitHub,
     Credentials({
+      id: "credentials",
       name: "credentials",
       authorize: async (credentials) => {
         //validate credentials - the same syntactical validation as in the login form
@@ -26,6 +27,15 @@ export default {
 
         return user;
       }
-    })
+    }),
+    Credentials({
+      id: "direct_jwt_auth",
+      name: "direct_jwt_auth",
+      authorize: async (credentials) => {
+        const { email } = credentials;
+        const user = await getUserByEmail(email as string);
+        return user;
+      }
+    })    
   ],
 } satisfies NextAuthConfig;

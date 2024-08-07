@@ -100,6 +100,36 @@ export async function signInUser(data: LoginSchema): Promise<ActionResult<string
   }
 }
 
+export async function refreshToken() {
+
+  try {
+    const userId = await getAuthUserId();
+    const user = await getUserById(userId);
+    if(!user) return null;
+
+    //console.log("REFRESH", user);
+    const result = await signIn("direct_jwt_auth", {
+      email: user.email,
+      redirect: false
+    });
+    console.log(result);
+    return { status: "success", data: "Refreshed Token" };    
+
+  } catch(e) {
+    console.log(e); //report DETAILED ERROR on the server side
+
+    //send general error info to the client
+    if (e instanceof AuthError) {
+      //console.log("TYPE", e.type)
+      if(e.type === "CredentialsSignin") 
+        return { status: "error", error: "Invalid credentials" };
+      return { status: "error", error: "Something went wrong" };
+    } else {
+      return { status: "error", error: "Something else went wrong" };
+    }  
+  }
+}
+
 export async function signOutUser() {
   await signOut({redirectTo:"/"});
 }

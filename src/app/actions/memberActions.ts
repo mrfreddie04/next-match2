@@ -53,6 +53,7 @@ export async function getMemberPhotosByUserId(userId: string): Promise<Photo[] |
 }
 
 async function fetchMemberByUserId(userId: string) {
+  //console.log("UID", userId);
   return prisma.member.findUnique({ 
     where: { userId: userId }
   });

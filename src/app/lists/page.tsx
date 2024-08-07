@@ -1,5 +1,5 @@
-import React from 'react'
-import ListsTab from './ListsTab'
+import React from 'react';
+import ListsTab from './ListsTab';
 import { getCurrentUserLikeIds, getCurrentUserLikedMembers } from '../actions/likeActions';
 import { LikeType } from '@/types';
 
