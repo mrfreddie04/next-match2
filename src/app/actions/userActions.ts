@@ -26,9 +26,7 @@ export async function updateMemberProfile(data: MemberEditSchema, nameUpdated: b
 
     //update db
     const member = await prisma.member.update({
-      where: {
-        userId: userId,
-      },
+      where: { userId: userId },
       data: {
         name, description, city, country
       },
@@ -59,9 +57,7 @@ export async function addImage(url: string, publicId: string): Promise<Member> {
     const userId = await getAuthUserId();
 
     return await prisma.member.update({
-      where: {
-        userId: userId,
-      },
+      where: { userId: userId },
       data: {
         photos: {
           create: [

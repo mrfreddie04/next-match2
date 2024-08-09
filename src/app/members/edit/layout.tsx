@@ -20,7 +20,8 @@ export default async function MemberEditLayout({children}: Props) {
 
   const navLinks = [
     { name: "Edit Profile", href: `${basePath}` },
-    { name: "Update Photos", href: `${basePath}/photos` }
+    { name: "Update Photos", href: `${basePath}/photos` },
+    //{ name: "Chat", href: `${basePath}/chat` }
   ];  
 
   //console.log("Member Edit");

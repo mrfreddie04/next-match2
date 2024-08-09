@@ -15,8 +15,6 @@ type Props = {
 
 export default function MemberSidebar({member, navLinks}: Props) {
   const pathname = usePathname();
-
-  //console.log("Member Sidebar");
   
   return (
     <Card className='w-full mt-10 items-center h-[80vh]'>
