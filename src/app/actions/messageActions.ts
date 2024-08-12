@@ -3,12 +3,21 @@
 import { prisma } from "@/lib/prisma";
 import { MessageSchema, messageSchema } from "@/lib/schemas/messageSchema";
 import { ActionResult, MessageDto, MessageWithSenderRecipient, MessageContainer } from "@/types";
-import { Message } from "@prisma/client";
 import { getAuthUserId } from "./authActions";
 import { mapMessageToMessageDto } from "@/lib/mappings";
-import { delay } from "@/lib/utils";
+import { createChatId, delay } from "@/lib/utils";
+import { MESSAGE_NEW, pusherServer } from "@/lib/pusher";
 
-export async function createMessage(recipientUserId: string, data: MessageSchema): Promise<ActionResult<Message>> {
+const messageSelect = {
+  id: true, 
+  text: true, 
+  createdAt: true, 
+  dateRead: true,
+  sender: { select: {userId: true, name: true, image: true} },
+  recipient: { select: {userId: true, name: true, image: true} },
+}
+
+export async function createMessage(recipientUserId: string, data: MessageSchema): Promise<ActionResult<MessageDto>> {
   try {
     const validated = messageSchema.safeParse(data);
     if(!validated.success) {
@@ -22,17 +31,23 @@ export async function createMessage(recipientUserId: string, data: MessageSchema
 
     const { text } = validated.data;
 
-    const message = await prisma.message.create({
+    const message: MessageWithSenderRecipient = await prisma.message.create({
       data: {
         senderId: userId,
         recipientId: recipientUserId,
         text: text
-      }  
+      },
+      select: messageSelect  
     });     
+
+    //push this message to the pusher channel
+    const messageDto = mapMessageToMessageDto(message);
+    const channel = createChatId(userId, recipientUserId);
+    await pusherServer.trigger(channel, MESSAGE_NEW, messageDto);
 
     return {
       status: "success",
-      data: message
+      data: messageDto
     }
 
   } catch(e) {
@@ -60,14 +75,7 @@ export async function getMessageThread(recipientUserId: string): Promise<Message
           createdAt: 'asc',
         }
       ],      
-      select: {
-        id: true, 
-        text: true, 
-        createdAt: true, 
-        dateRead: true,
-        sender: { select: {userId: true, name: true, image: true} },
-        recipient: { select: {userId: true, name: true, image: true} },
-      }
+      select: messageSelect
     });
 
     //mark inbox messages as read
@@ -105,14 +113,7 @@ export async function getMessagesByContainer(container: MessageContainer) {
     const messages = await prisma.message.findMany({
       where: conditions,
       orderBy: { createdAt: 'desc' },      
-      select: {
-        id: true, 
-        text: true, 
-        createdAt: true, 
-        dateRead: true,
-        sender: { select: {userId: true, name: true, image: true} },
-        recipient: { select: {userId: true, name: true, image: true} },
-      }
+      select: messageSelect
     });
 
     return messages.map( (message) => mapMessageToMessageDto(message));
@@ -163,8 +164,7 @@ export async function deleteMessage(messageId: string, isOutbox: boolean) {
       })
     }
 
-    //await delay(100);
-    console.log("DELETED")
+    await delay(5000);
 
   } catch(e) {
     console.log(e);

@@ -59,7 +59,7 @@ export default function MessageTable({messages}: Props) {
 
   const renderCell = useCallback((item: MessageDto, columnKey: keyof MessageDto) => {
   //const renderCell = (item: MessageDto, columnKey: keyof MessageDto) => {
-    //console.log("RC",isDeleting, item.id);
+    console.log("RC",isDeleting, item.id);
     const cellValue = item[columnKey];
     switch (columnKey) {
       case 'recipientName':
@@ -84,7 +84,8 @@ export default function MessageTable({messages}: Props) {
         return cellValue;   
       default:  
         //for actions  
-        //if(isDeleting.deleting) console.log("CV",isDeleting,item.id);
+        //if(isDeleting.deleting) 
+        console.log("Render Button",isDeleting,item.id);
         return (          
           <Button 
             isIconOnly variant='light' 
@@ -97,7 +98,7 @@ export default function MessageTable({messages}: Props) {
     }
   }, [isOutbox, isDeleting.id, isDeleting.deleting, handleMessageDelete]);
   
-  //console.log("MT",isDeleting);
+  console.log("Render Message Table",isDeleting);
 
   return (
     <Card className='flex flex-col gap-3 h-[80vh] overflow-auto'>  
