@@ -39,3 +39,16 @@ type MessageDto = {
 type MessageContainer = "inbox" | "outbox";
 
 type MessageDtoFields = keyof MessageDto;
+
+
+type LikeNew = Prisma.LikeGetPayload<{
+  select: {
+    sourceMember: { select: {userId: true, name: true, image: true} }
+  }  
+}>
+
+type LikeDto = {
+  userId: string, 
+  name: string, 
+  image?: string | null,
+}

@@ -4,7 +4,8 @@ import { prisma } from "@/lib/prisma";
 import { delay } from "@/lib/utils";
 import { Member, Like } from "@prisma/client";
 import { getAuthUserId } from "./authActions";
-import { LikeType } from "@/types";
+import { LikeDto, LikeType } from "@/types";
+import { EVENT_LIKE_NEW, pusherServer } from "@/lib/pusher";
 
 export async function toggleLikeMember(targetUserId: string, isLiked: boolean) {
   try {
@@ -18,12 +19,24 @@ export async function toggleLikeMember(targetUserId: string, isLiked: boolean) {
         }
       });
     } else {
-      await prisma.like.create({
+      const likeNew = await prisma.like.create({
         data: {
           sourceUserId:userId,
           targetUserId
+        },
+        select: {
+          sourceMember: { select: {userId: true, name: true, image: true} }
         }  
-      });      
+      });    
+      //send notification  
+      const likeDto: LikeDto = {
+        userId: likeNew.sourceMember.userId,
+        name: likeNew.sourceMember.name, 
+        image: likeNew.sourceMember.image
+      }
+      console.log("NEW LIKE PUSH", likeDto.userId)
+      const channelNotify = `private-${targetUserId}`;
+      await pusherServer.trigger(channelNotify, EVENT_LIKE_NEW, likeDto);      
     }
   } catch(e) {
     console.log(e);

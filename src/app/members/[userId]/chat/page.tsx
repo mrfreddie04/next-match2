@@ -14,14 +14,14 @@ type Props = {
 
 export default async function MemberChatPage({params}: Props) {
   const currentUserId = await getAuthUserId();
-  const messages = await getMessageThread(params.userId);
+  const initialMessages = await getMessageThread(params.userId);
   const chatId = createChatId(currentUserId, params.userId);
   //console.log(messages);
 
   return (
     <CardInnerWrapper 
       header="Chat" 
-      body={<MessageList initialMessages={messages} currentUserId={currentUserId} chatId={chatId}/>}
+      body={<MessageList initialMessages={initialMessages} currentUserId={currentUserId} chatId={chatId}/>}
       footer={<ChatForm/>}
     />
   )  

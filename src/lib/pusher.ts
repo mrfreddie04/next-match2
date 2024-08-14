@@ -18,6 +18,10 @@ if(!global.pusherServerInstance) {
 
 if(!global.pusherClientInstance) {
   global.pusherClientInstance = new PusherClient(process.env.NEXT_PUBLIC_PUSHER_APP_KEY!, {
+    channelAuthorization: {
+      endpoint: '/api/pusher-auth',
+      transport: 'ajax'
+    },
     cluster: process.env.NEXT_PUBLIC_PUSHER_CLUSTER!
   });
 }
@@ -25,5 +29,14 @@ if(!global.pusherClientInstance) {
 // assign global vars to modiule level vars and export
 export const pusherClient = global.pusherClientInstance;
 export const pusherServer = global.pusherServerInstance;
-export const MESSAGE_NEW = "message:new";
 
+// channel 
+export const CHANNEL_PRESENCE_NM = "presence-nm";
+
+// events
+export const EVENT_LIKE_NEW = "like:new";
+export const EVENT_MESSAGE_NEW = "message:new";
+export const EVENT_MESSAGES_READ = "messages:read";
+export const EVENT_PRESENCE_SUBSCRIPTION_SUCCEEDED = "pusher:subscription_succeeded";
+export const EVENT_PRESENCE_MEMBER_ADDED = "pusher:member_added";
+export const EVENT_PRESENCE_MEMBER_REMOVED = "pusher:member_removed";

@@ -1,111 +1,25 @@
 'use client';
 
-import React, { Key, useCallback, useState } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
-import { Avatar, Button, Card, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow, getKeyValue } from '@nextui-org/react';
+import React from 'react';
+import { Card, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow, getKeyValue } from '@nextui-org/react';
 import { MessageDto } from '@/types';
-import { AiFillDelete } from 'react-icons/ai';
-import { deleteMessage } from '../actions/messageActions';
-import { toast } from 'react-toastify';
-import { delay, truncateString } from '@/lib/utils';
+import { useMessages } from '@/hooks/useMessages';
+import MessageTableCell from './MessageTableCell';
 
 type Props = {
-  messages: MessageDto[]
+  initialMessages: MessageDto[]
 }
 
-type Deleting = {
-  deleting: boolean,
-  id: string
-}
-
-export default function MessageTable({messages}: Props) {
-  const [isDeleting, setIsDeleting] = useState<Deleting>({
-    deleting: false,
-    id: ''
-  });  
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const isOutbox = searchParams.get("container") === "outbox";
-
-  const columns = [
-    { key: isOutbox ? 'recipientName' : 'senderName', label: isOutbox ? 'Recipient' : 'Sender'},
-    { key: 'text', label: 'Message'},
-    { key: 'createdAt', label: isOutbox ? 'Date sent' : 'Date received'},
-    { key: 'actions', label: 'Action'}
-  ];
-
-  const handleMessageDelete = useCallback(async (message: MessageDto) => {
-    //const handleMessageDelete = async (message: MessageDto) => {
-    setIsDeleting({deleting: true,id: message.id});
-    try {
-      await deleteMessage(message.id, isOutbox);
-      router.refresh();
-    } catch (error: any) {
-      toast.error(error.message);
-    } finally {
-      setIsDeleting({ deleting: false, id: '' })
-    }   
-  },[isOutbox]);
-
-  // const list = columns.map( col => col.key)
-  // type Keys = typeof list[number]; // 'a'|'b'|'c';
-  const handleRowSelect = (key:Key) => {
-    const message = messages.find( message => message.id === key);
-    if(!message) return;
-    const userId = isOutbox ? message.recipientId : message.senderId;
-    if(!userId) return;
-    router.push(`/members/${userId}/chat`);
-  }
-
-  const renderCell = useCallback((item: MessageDto, columnKey: keyof MessageDto) => {
-  //const renderCell = (item: MessageDto, columnKey: keyof MessageDto) => {
-    console.log("RC",isDeleting, item.id);
-    const cellValue = item[columnKey];
-    switch (columnKey) {
-      case 'recipientName':
-      case 'senderName':
-        return (
-          <div className='flex items-center gap-2 cursor-pointer'>
-            <Avatar
-              alt='Image of member'
-              size='sm'
-              src={(isOutbox ? item.recipientImage : item.senderImage) || "/images/user.png"} 
-            />
-            <span>{cellValue}</span>
-          </div>
-        )
-      case 'text':  
-        return (
-          <div className='truncate'>
-            {truncateString(cellValue,80)}
-          </div>
-        )
-      case 'createdAt':      
-        return cellValue;   
-      default:  
-        //for actions  
-        //if(isDeleting.deleting) 
-        console.log("Render Button",isDeleting,item.id);
-        return (          
-          <Button 
-            isIconOnly variant='light' 
-            isLoading={isDeleting.deleting && isDeleting.id === item.id}
-            onClick={() => handleMessageDelete(item)} 
-          >
-            <AiFillDelete size={24} className='text-danger'/>
-          </Button>
-        )
-    }
-  }, [isOutbox, isDeleting.id, isDeleting.deleting, handleMessageDelete]);
-  
-  console.log("Render Message Table",isDeleting);
+export default function MessageTable({initialMessages}: Props) {
+  //console.log("Render Message Table",isDeleting);
+  const { deleteMessage, selectRow, columns, isDeleting, isOutbox, messages } = useMessages(initialMessages);
 
   return (
     <Card className='flex flex-col gap-3 h-[80vh] overflow-auto'>  
       <Table 
         aria-label='Table with messages'
         selectionMode='single'
-        onRowAction={handleRowSelect}
+        onRowAction={selectRow}
         shadow='none'
       >
         <TableHeader columns={columns}>
@@ -121,7 +35,13 @@ export default function MessageTable({messages}: Props) {
                   {/* <div className={`${!item.dateRead && !isOutbox ? 'font-semibold' : ''}`}>
                     {getKeyValue(item,columnKey)}
                   </div> */}
-                  {renderCell(item, columnKey as keyof MessageDto)}
+                  <MessageTableCell 
+                    item={item}
+                    columnKey={columnKey as keyof MessageDto}
+                    isOutbox={isOutbox}
+                    isDeleting={isDeleting.deleting && isDeleting.id === item.id}
+                    deleteMessage={deleteMessage}
+                  />
                 </TableCell>
               )}
             </TableRow>    

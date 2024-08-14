@@ -6,6 +6,7 @@ import { Card, CardFooter, Image } from '@nextui-org/react';
 import Link from 'next/link';
 import { calculateAge, transformImageUrl } from '@/lib/utils';
 import LikeButton from '@/components/LikeButton';
+import PresenceDot from '@/components/PresenceDot';
 
 type Props = {
   member: Member
@@ -39,6 +40,9 @@ export default function MemberCard( {member, likeIds}: Props) {
         <div className='absolute top-3 right-3 z-50' >
           <LikeButton targetId={member.userId} hasLiked={hasLiked}/>
         </div>
+        <div className='absolute top-2 left-3 z-50' >
+          <PresenceDot member={member}/>
+        </div>        
       </div>
       <CardFooter className='absolute bottom-0 z-10 flex justify-start bg-black bg-dark-gradient overflow-hidden'>
         <div className='flex flex-col text-white'>

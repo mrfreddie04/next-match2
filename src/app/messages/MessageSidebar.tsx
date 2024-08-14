@@ -7,6 +7,7 @@ import clsx from 'clsx';
 import { GoInbox } from 'react-icons/go';
 import { MdOutlineOutbox } from 'react-icons/md';
 import { Chip } from '@nextui-org/react';
+import useMessageStore from '@/hooks/useMessageStore';
 
 export default function MessageSidebar() {
   const searchParams = useSearchParams();
@@ -15,6 +16,10 @@ export default function MessageSidebar() {
 
   const [selected, setSelected] = useState<string>(searchParams.get("container") || "inbox");
   //const selected = searchParams.get("container") || "inbox";
+
+  const { unreadCount } = useMessageStore( state => ({
+    unreadCount: state.unreadCount
+  }));       
 
   const items = [
     { key: "inbox", label: "Inbox", icon: GoInbox, chip: true},
@@ -41,7 +46,7 @@ export default function MessageSidebar() {
           <Icon size={24}/>
           <div className='flex justify-between flex-grow'>
             <span>{label}</span>
-            {chip && (<Chip>5</Chip>)}
+            {chip && (<Chip>{unreadCount}</Chip>)}
           </div>
         </div>
       ))}

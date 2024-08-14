@@ -4,7 +4,8 @@ import React, { useEffect, useRef } from 'react';
 import clsx from 'clsx';
 import { Avatar } from '@nextui-org/react';
 import { MessageDto } from "@/types";
-import { transformImageUrl } from '@/lib/utils';
+import { timeAgo, transformImageUrl } from '@/lib/utils';
+import PresenceAvatar from '@/components/PresenceAvatar';
 
 type Props = {
   message: MessageDto;
@@ -22,11 +23,16 @@ export default function MessageBox({message, currentUserId}: Props) {
   },[messageEndRef]);
   
   const renderAvatar = () => (
-    <Avatar 
-      name={message.senderName}
-      className='self-end'
-      size='sm'
-      src={transformImageUrl(message.senderImage) || "/images/user.png"}      
+    // <Avatar 
+    //   name={message.senderName}
+    //   className='self-end'
+    //   size='sm'
+    //   src={transformImageUrl(message.senderImage) || "/images/user.png"}      
+    // />
+    <PresenceAvatar 
+      userId={message.senderId}
+      src={transformImageUrl(message.senderImage)}
+      className='self-end'        
     />
   );
 
@@ -42,7 +48,7 @@ export default function MessageBox({message, currentUserId}: Props) {
       {'justify-end': isCurrentUserSender && !message.dateRead} 
     )}>
       {message.dateRead && message.recipientId !== currentUserId && (
-        <span className='text-xs text-black text-italic'>(Read 4 mins ago)</span>
+        <span className='text-xs text-black text-italic'>({timeAgo(message.dateRead)} ago)</span>
       )} 
       <div className={clsx('flex')}>
         <span className='text-sm font-semibold text-gray-900'>{message.senderName}</span>
