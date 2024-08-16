@@ -20,9 +20,6 @@ export default async function MembersPage({searchParams}: Props) {
 
   const { items: members, totalCount} = paginatedResponse;
 
-  //console.log("AR",searchParams.ageRange?.split(","))
-  //console.log("MP");
-
   return (
     <div className="px-2">
       {!members || members.length === 0 ? (

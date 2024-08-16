@@ -12,10 +12,11 @@ export async function getMembers({
   gender = 'male,female',
   orderBy = 'updatedAt',
   pageNumber = '1',
-  pageSize = '12'
+  pageSize = '12',
+  withPhoto = 'true'
 }: GetMemberParams): Promise<PaginatedResponse<Member>> {
   try {
-    console.log("GetMembers", {pageNumber, pageSize, orderBy, gender, ageRange});
+    //console.log("GetMembers", {pageNumber, pageSize, orderBy, gender, ageRange, withPhoto});
     //will throw if not authorized
     const userId = await getAuthUserId();
     
@@ -28,32 +29,30 @@ export async function getMembers({
     const selectedOrderBy = orderBy!;
 
     //paging
-    const page =  parseInt(pageNumber!);
-    const take= parseInt(pageSize!);
+    const page = parseInt(pageNumber!);
+    const take = parseInt(pageSize!);
     const skip = (page - 1) * take;
 
     await delay(500);
 
+    const whereObj = { 
+      userId: { not: userId },
+      AND: [
+        { dateOfBirth: {gte: minDob}}, 
+        { dateOfBirth: {lte: maxDob}},
+        { gender: {in: selectedGender}},
+        ...( withPhoto === 'true' ? [{ image: {not: null}}] : [])
+      ]  
+    }
+    
+    //console.log(queryArgs);
+
     const count = await prisma.member.count({
-      where: { 
-        userId: { not: userId },
-        AND: [
-          { dateOfBirth: {gte: minDob}}, 
-          { dateOfBirth: {lte: maxDob}},
-          { gender: { in: selectedGender }}
-        ]  
-      }
+      where: whereObj
     });
 
     const members = await prisma.member.findMany({
-      where: { 
-        userId: { not: userId },
-        AND: [
-          { dateOfBirth: {gte: minDob}}, 
-          { dateOfBirth: {lte: maxDob}},
-          { gender: { in: selectedGender }}
-        ]  
-      },
+      where: whereObj,
       orderBy: { [selectedOrderBy]: 'desc' },
       skip,
       take

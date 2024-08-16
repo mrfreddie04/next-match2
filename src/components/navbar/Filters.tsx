@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Button, Select, SelectItem, Slider, Selection, Spinner } from '@nextui-org/react';
+import { Button, Select, SelectItem, Slider, Selection, Spinner, Switch } from '@nextui-org/react';
 import { useFilters } from '@/hooks/useFilters';
 
 export default function Filters() {
@@ -11,15 +11,19 @@ export default function Filters() {
     orderByList, 
     selectAge, 
     selectGender, 
+    selectWithPhoto,
     selectOrder,
-    isPending
+    isPending,
+    totalCount
   } = useFilters();  
+
+  const { gender, ageRange, withPhoto, orderBy } = filters;
 
   return (
     <div className='shadow-md py-2'>
       <div className='flex flex-row justify-around items-center'>
         <div className='flex gap-2 items-center'>
-          <div className='text-secondary font-semibold tex-xl'>Results: 10</div>
+          <div className='text-secondary font-semibold tex-xl'>Results: {totalCount}</div>
           {isPending && (<Spinner size='sm' color='secondary'/>)}
         </div>
         <div className='flex gap-2 items-center'>
@@ -29,7 +33,7 @@ export default function Filters() {
               key={value} 
               size='sm' 
               isIconOnly 
-              color={filters.gender.includes(value) ? 'secondary' :'default'}
+              color={gender.includes(value) ? 'secondary' :'default'}
               onClick={() => selectGender(value)}
             >
               <Icon size={24}/>
@@ -44,8 +48,18 @@ export default function Filters() {
             size='sm' 
             minValue={18} 
             maxValue={100}
-            defaultValue={filters.ageRange}
+            defaultValue={ageRange}
             onChangeEnd={(value) => selectAge(value as number[])}
+          />
+        </div>
+        <div className='flex flex-col items-center'>
+          <p className='text-sm'>With photos</p>
+          <Switch
+            color='secondary'            
+            aria-label="Show only users with photo"
+            size='sm'
+            isSelected={withPhoto} 
+            onValueChange={selectWithPhoto}
           />
         </div>
         <div className='w-1/4'>
@@ -56,7 +70,7 @@ export default function Filters() {
             variant='bordered'
             color='secondary'
             aria-label='Order by selector'
-            selectedKeys={new Set([filters.orderBy])}
+            selectedKeys={new Set([orderBy])}
             onSelectionChange={(value: Selection) => selectOrder(value)}
           >
             {orderByList.map( item => (

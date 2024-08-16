@@ -59,6 +59,7 @@ type UserFilters = {
   ageRange: number[];
   gender: string[];
   orderBy: string;
+  withPhoto: boolean;
 }
 
 //pagination - request sent to the server - from "Pagination" & "Page size" components
@@ -85,6 +86,7 @@ type GetMemberParams = {
   orderBy?: string | null;
   pageNumber?: string | null;
   pageSize?: string | null;
+  withPhoto?: string | null;
 }
 
 type CursorResponse<T,C> = {
