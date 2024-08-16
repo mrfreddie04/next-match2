@@ -21,7 +21,8 @@ type MessageWithSenderRecipient = Prisma.MessageGetPayload<{
     sender: { select: {userId: true, name: true, image: true}}, 
     recipient: { select: {userId: true, name: true, image: true}}
   }
-}>
+}>;
+
 
 type MessageDto = {
   id: string, 
@@ -51,4 +52,42 @@ type LikeDto = {
   userId: string, 
   name: string, 
   image?: string | null,
+}
+
+//filters
+type UserFilters = {
+  ageRange: number[];
+  gender: string[];
+  orderBy: string;
+}
+
+//pagination - request sent to the server - from "Pagination" & "Page size" components
+type PagingParams = {
+  pageSize: number;
+  pageNumber: number;
+}
+
+//pagination - paging result - to populate "Pagination" component (total num of pages), and showing "1-10 of 23"
+type PagingResult = {
+  totalPages: number;
+  totalCount: number;
+} & PagingParams;
+
+type PaginatedResponse<T> = {
+  items: T[];
+  totalCount: number;
+}
+
+// QS params
+type GetMemberParams = {
+  ageRange?: string | null;
+  gender?: string | null;
+  orderBy?: string | null;
+  pageNumber?: string | null;
+  pageSize?: string | null;
+}
+
+type CursorResponse<T,C> = {
+  messages: T[],
+  nextCursor: C | undefined
 }

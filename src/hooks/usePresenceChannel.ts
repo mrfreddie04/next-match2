@@ -6,6 +6,7 @@ import { pusherClient, CHANNEL_PRESENCE_NM,
   EVENT_PRESENCE_MEMBER_REMOVED 
 } from "@/lib/pusher";
 import usePresenceStore from "./usePresenceStore";
+import { updateLastActive } from "@/app/actions/memberActions";
 
 export const usePresenceChannel = (userId: string | null) => {
   // usePresenceStore is overloaded:
@@ -26,6 +27,11 @@ export const usePresenceChannel = (userId: string | null) => {
     set(memberIds);
   },[set]);
 
+  const handleSusbscriptionSucceeded = useCallback(async (members: Members)=> {
+    handleSetMembers(members);
+    await updateLastActive();
+  },[handleSetMembers]);
+
   const handleAddMember = useCallback((member: Record<string,any>) => {
     const memberId = member.id;
     add(memberId);
@@ -41,21 +47,21 @@ export const usePresenceChannel = (userId: string | null) => {
     
     if(!channelRef.current) {
       channelRef.current = pusherClient.subscribe(CHANNEL_PRESENCE_NM);      
-      channelRef.current.bind(EVENT_PRESENCE_SUBSCRIPTION_SUCCEEDED, handleSetMembers);
+      channelRef.current.bind(EVENT_PRESENCE_SUBSCRIPTION_SUCCEEDED, handleSusbscriptionSucceeded);
       channelRef.current.bind(EVENT_PRESENCE_MEMBER_ADDED, handleAddMember);     
       channelRef.current.bind(EVENT_PRESENCE_MEMBER_REMOVED, handleRemoveMember);        
     }
 
     return () => {
       if(channelRef.current && channelRef.current.subscribed) {      
-        channelRef.current.unbind(EVENT_PRESENCE_SUBSCRIPTION_SUCCEEDED, handleSetMembers);
+        channelRef.current.unbind(EVENT_PRESENCE_SUBSCRIPTION_SUCCEEDED, handleSusbscriptionSucceeded);
         channelRef.current.unbind(EVENT_PRESENCE_MEMBER_ADDED, handleAddMember);     
         channelRef.current.unbind(EVENT_PRESENCE_MEMBER_REMOVED, handleRemoveMember);   
         channelRef.current.unsubscribe();
         channelRef.current = null;
       }  
     };
-  }, [handleSetMembers, handleAddMember, handleRemoveMember]);
+  }, [handleSetMembers, handleAddMember, handleRemoveMember, handleSusbscriptionSucceeded, userId]);
 }
 
 /*

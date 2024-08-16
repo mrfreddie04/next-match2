@@ -10,7 +10,7 @@ export default function LoadingComponent({label}: Props) {
   const message = label ?? "Loading...";
 
   return(
-    <div className='fixed inset-0 flex justify-center items-center'>
+    <div className='flex justify-center items-center vertical-center'>
       <Spinner label={message} color="secondary" labelColor="secondary"/>
     </div>
   );  

@@ -23,7 +23,7 @@ export default async function MessagesPage({searchParams}: Props) {
         <MessageSidebar />
       </div>
       <div className="col-span-10">
-        <MessageTable initialMessages={messages}/>
+        <MessageTable initialMessages={messages.messages} nextCursor={messages.nextCursor}/>
       </div>
     </div>
   )

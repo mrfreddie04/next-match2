@@ -39,16 +39,16 @@ export const useNotificationChannel = (userId: string | null) => {
       updateUnreadCount(1);
     }
 
-  },[add, pathname, searchParams, updateUnreadCount]);
+  },[add, pathname, searchParams, updateUnreadCount, userId]);
 
   const handleNewLike = useCallback((like: LikeDto) => {
     console.log("NEW LIKE", like.userId)
     newLikeToast(like);
   },[]);  
 
-  const channelName = `private-${userId}`;
   
   useEffect(() => {
+    const channelName = `private-${userId}`;
     //console.log("UNC", userId)
     if(!userId) return; //set up subscription only for authorized users
 
@@ -66,6 +66,6 @@ export const useNotificationChannel = (userId: string | null) => {
         channelRef.current = null;
       }  
     };
-  }, [userId, handleNewMessage]);
+  }, [userId, handleNewMessage, handleNewLike]);
 }
 
