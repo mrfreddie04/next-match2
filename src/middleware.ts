@@ -14,6 +14,7 @@ export default auth((req) => {
   
   const isPublic = publicRoutes.includes(nextUrl.pathname);
   const isAuth = authRoutes.includes(nextUrl.pathname);
+  const isProfileComplete = req.auth?.user.profileComplete;
 
   //console.log("STATUS", nextUrl.pathname, isLoggedIn, isPublic, isAuth);
 
@@ -29,13 +30,19 @@ export default auth((req) => {
     return NextResponse.redirect(new URL("/login", nextUrl));
   }  
 
-  // if(isPublic || !isLoggedIn && isAuth || isLoggedIn && !isPublic) {
-  //   return NextResponse.next()
-  // }
+  if(isPublic) {
+    return NextResponse.next();
+  }  
+
+  //redirect to /complete-profile if the profile is not complete, the last condition is to avoid infinite loop
+  if(isLoggedIn && !isProfileComplete && nextUrl.pathname !== "/complete-profile") {
+    return NextResponse.redirect(new URL("/complete-profile", nextUrl));
+  }
 
   return NextResponse.next();
 });
 
+//define a matcher to exclude certain routes from the middleware
 export const config = {  
   matcher: [
     /*

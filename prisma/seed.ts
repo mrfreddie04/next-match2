@@ -12,6 +12,7 @@ async function seedMembers() {
       emailVerified: new Date(),
       passwordHash: await bcrypt.hash("password", 10),
       image: member.image,
+      profileComplete: true,
       member: {
         create: {
           name: member.name,

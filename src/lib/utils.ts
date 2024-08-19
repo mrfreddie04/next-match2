@@ -6,6 +6,10 @@ export function delay(ms: number) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
+export function isValidDate(stringDate: string) {
+  return !isNaN(Date.parse(stringDate));
+}
+
 export function calculateAge(dob: Date) {
   return differenceInYears(new Date(), dob);
 }

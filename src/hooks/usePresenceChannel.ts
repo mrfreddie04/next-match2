@@ -8,7 +8,7 @@ import { pusherClient, CHANNEL_PRESENCE_NM,
 import usePresenceStore from "./usePresenceStore";
 import { updateLastActive } from "@/app/actions/memberActions";
 
-export const usePresenceChannel = (userId: string | null) => {
+export const usePresenceChannel = (userId: string | null, profileComplete: boolean) => {
   // usePresenceStore is overloaded:
   // 1) no params - returns the entire PresenceState
   // 2) can pass a function that takes PresenceState as a pram and returns the "public interface" to the store
@@ -43,7 +43,7 @@ export const usePresenceChannel = (userId: string | null) => {
   },[remove]);  
 
   useEffect(() => {
-    if(!userId) return;
+    if(!userId || !profileComplete) return;
     
     if(!channelRef.current) {
       channelRef.current = pusherClient.subscribe(CHANNEL_PRESENCE_NM);      
@@ -61,7 +61,7 @@ export const usePresenceChannel = (userId: string | null) => {
         channelRef.current = null;
       }  
     };
-  }, [handleSetMembers, handleAddMember, handleRemoveMember, handleSusbscriptionSucceeded, userId]);
+  }, [handleSetMembers, handleAddMember, handleRemoveMember, handleSusbscriptionSucceeded, userId, profileComplete]);
 }
 
 /*

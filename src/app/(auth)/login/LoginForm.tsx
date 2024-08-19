@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react'
-import { Button, Card, CardBody, CardHeader, Input } from '@nextui-org/react'
+import { Button, Card, CardBody, CardHeader, Input, Link } from '@nextui-org/react'
 import { useRouter } from 'next/navigation';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { GiPadlock } from 'react-icons/gi'
@@ -9,11 +9,12 @@ import { toast } from 'react-toastify';
 import { LoginSchema, loginSchema } from '@/lib/schemas/loginSchema';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { signInUser } from '@/app/actions/authActions';
+import SocialLogin from './SocialLogin';
 
-type IFormInput = {
-  email: string;
-  password: string;
-}
+//type IFormInput = {
+//   email: string;
+//   password: string;
+// }
 
 export default function LoginForm() {
   const { register, handleSubmit, formState: {errors, isValid, isSubmitting} } = useForm<LoginSchema>({
@@ -76,6 +77,10 @@ export default function LoginForm() {
             >
               Login
             </Button>
+            <SocialLogin />
+            <div className='flex justify-center hover:underline text-sm'>
+              <Link href="/forgot-password">Forgot password?</Link>
+            </div>
           </div>
         </form>
       </CardBody>

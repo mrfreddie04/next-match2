@@ -18,11 +18,12 @@ export default async function RootLayout({
   //do not call getAuthUserId because it may throw an error - which we do not want 
   const session = await auth();
   const userId = session?.user?.id || null;
+  const profileComplete = session?.user?.profileComplete || false;
 
   return (
     <html lang="en">
       <body>
-        <Providers userId={userId}>
+        <Providers userId={userId} profileComplete={profileComplete}>
           <TopNav/>
           <main className="container mx-auto">
             {children}

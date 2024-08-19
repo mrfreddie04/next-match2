@@ -7,7 +7,7 @@ import { LikeDto, MessageDto } from "@/types";
 //import { newMessageToast } from "@/components/NewMessageToast";
 import { newLikeToast, newMessageToast } from "@/components/NotificationToast";
 
-export const useNotificationChannel = (userId: string | null) => {
+export const useNotificationChannel = (userId: string | null, profileComplete: boolean) => {
   
   const { add, updateUnreadCount } = useMessageStore( state => ({
     add: state.add,
@@ -50,7 +50,7 @@ export const useNotificationChannel = (userId: string | null) => {
   useEffect(() => {
     const channelName = `private-${userId}`;
     //console.log("UNC", userId)
-    if(!userId) return; //set up subscription only for authorized users
+    if(!userId || !profileComplete) return; //set up subscription only for authorized users
 
     if(!channelRef.current) {
       channelRef.current = pusherClient.subscribe(channelName);   
@@ -66,6 +66,6 @@ export const useNotificationChannel = (userId: string | null) => {
         channelRef.current = null;
       }  
     };
-  }, [userId, handleNewMessage, handleNewLike]);
+  }, [userId, handleNewMessage, handleNewLike, profileComplete]);
 }
 

@@ -1,39 +1,73 @@
 'use client';
 
-import React from 'react';
-import { registerSchema, RegisterSchema, RegisterFields} from "@/lib/schemas/registerSchema";
-import { Path, SubmitHandler, useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
+import React, { useState } from 'react';
+import { userDetailsSchema, RegisterSchema, profileSchema} from "@/lib/schemas/registerSchema";
+import { useRouter } from 'next/navigation';
+import { SubmitHandler, useForm, FormProvider } from 'react-hook-form';
 import { Button, Card, CardBody, CardHeader, Input } from '@nextui-org/react';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { GiPadlock } from 'react-icons/gi';
 import { registerUser } from '@/app/actions/authActions';
-import { ZodIssue } from 'zod';
 import { handleFormServerErrors } from '@/lib/utils';
+import UserDetailsForm from './UserDetailsForm';
+import ProfileForm from './ProfileForm';
+
+//{ register, handleSubmit, setError, formState: {errors, isValid, isSubmitting} }
+const stepSchemas = [userDetailsSchema, profileSchema];
 
 export default function RegisterForm() {
-  const { register, handleSubmit, setError, formState: {errors, isValid, isSubmitting} } = useForm<RegisterSchema>({
-    //resolver: zodResolver(registerSchema),
+  const router = useRouter();
+  const [activeStep, setActiveStep] = useState(0);
+  const currentValidationSchema = stepSchemas[activeStep];
+
+  //validate active step schema
+  const methods = useForm<RegisterSchema>({
+    resolver: zodResolver(currentValidationSchema),
     mode: "onTouched"
   });
 
-  const onSubmit: SubmitHandler<RegisterSchema> = async (data) => {
-    //console.log(data);
+  const { getValues, handleSubmit, setError, formState: {errors, isValid, isSubmitting }} = methods;
+
+  const getStepContent = (step: number) => {
+    switch (step) {
+      case 0:
+        return <UserDetailsForm />;
+      case 1:
+        return <ProfileForm />;
+      default:
+        return 'Unknown step';
+    }
+  }
+
+  const onBack = () => {
+    if(activeStep === 0) return;
+    setActiveStep(prev => prev-1);
+  }
+
+  const onNext = async () => {
+    if(activeStep === stepSchemas.length-1 ) return;
+    setActiveStep(prev => prev+1);
+    // if(activeStep === stepSchemas.length-1 ) {
+    //   await onSubmit();
+    // } else {
+    //   setActiveStep(prev => prev+1);
+    // }
+  }  
+
+  const onSubmit = async () => {
+    if(activeStep !== stepSchemas.length-1 ) return;
+    const data = getValues();
+
     const result = await registerUser(data);
     if(result.status === "success") {
-      //console.log("User registered successfully");
+      console.log("User registered successfully");
+      //redirect
+      router.push("/register/success");
     }
-    if(result.status === "error") {
+    else if(result.status === "error") {
+      console.log("RegisterError",result.error);
       handleFormServerErrors(result, setError);
-      // if(Array.isArray(result.error)) {
-      //   result.error.forEach( (e: ZodIssue) => {
-      //     const fieldName = e.path.join(".") as Path<RegisterSchema>;
-      //     setError(fieldName, {message: e.message});
-      //   });
-      // } else if(typeof result.error === "string") {
-      //   setError("root.serverError", {message:result.error});
-      // }
     }
-
   }
 
   return (
@@ -48,44 +82,39 @@ export default function RegisterForm() {
         </div>
       </CardHeader>
       <CardBody>
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <div className='space-y-4'> 
-            <Input
-              defaultValue=''
-              label='Name'
-              variant='bordered'
-              isInvalid={!!errors.name}
-              errorMessage={errors.name?.message}
-              {...register('name')}
-            />          
-            <Input
-              defaultValue=''
-              label='Email'
-              variant='bordered'
-              isInvalid={!!errors.email}
-              errorMessage={errors.email?.message}
-              {...register('email')}
-            />
-            <Input
-              defaultValue=''
-              label='Password'
-              variant='bordered'
-              type="password"
-              isInvalid={!!errors.password}
-              errorMessage={errors.password?.message}
-              {...register('password')}
-            />  
-            {errors.root?.serverError && (
-              <p className='text-danger text-sm'>{errors.root.serverError.message}</p>
-            )}      
-            <Button type="submit" fullWidth color='secondary' 
-              isDisabled={!isValid} 
-              isLoading={isSubmitting}
-            >
-              Register
-            </Button>
-          </div>
-        </form>
+        <FormProvider {...methods}>
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <div className='space-y-4'> 
+              { getStepContent(activeStep) }
+              {errors.root?.serverError && (
+                <p className='text-danger text-sm'>{errors.root.serverError.message}</p>
+              )}  
+              <div className='flex flex-row items-center gap-6'>
+                {activeStep !== 0 && (
+                  <Button onClick={onBack} fullWidth >
+                    Back
+                  </Button>
+                )}
+                {activeStep !== stepSchemas.length-1 && (
+                  <Button onClick={onNext} isDisabled={!isValid} fullWidth color='secondary'>
+                    Continue
+                  </Button>
+                )}
+                {activeStep === stepSchemas.length-1 && (
+                  <Button 
+                    type='submit' 
+                    isDisabled={!isValid} 
+                    isLoading={isSubmitting}  
+                    color='secondary'                  
+                    fullWidth
+                  >
+                    Submit
+                  </Button>
+                )}
+              </div>    
+            </div>
+          </form>
+        </FormProvider>
       </CardBody>
     </Card>
   )

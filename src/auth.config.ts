@@ -1,4 +1,5 @@
 import GitHub from "next-auth/providers/github";
+import Google from "next-auth/providers/google";
 import Credentials from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
 
@@ -8,7 +9,14 @@ import { getUserByEmail } from "./app/actions/authActions";
 
 export default {
   providers: [
-    //GitHub,
+    GitHub({
+      clientId: process.env.GITHUB_CLIENT_ID,
+      clientSecret: process.env.GITHUB_CLIENT_SECRET
+    }),
+    Google({
+      clientId: process.env.GOOGLE_CLIENT_ID,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET      
+    }),
     Credentials({
       id: "credentials",
       name: "credentials",
@@ -18,12 +26,12 @@ export default {
         
         if(!validated.success) return null;
 
-        const { email, password }  = validated.data;
+        const { email, password } = validated.data;
 
         //verify against db
         const user = await getUserByEmail(email);
 
-        if(!user || !await bcrypt.compare(password, user.passwordHash)) return null;
+        if(!user || !user.passwordHash || !await bcrypt.compare(password, user.passwordHash)) return null;
 
         return user;
       }

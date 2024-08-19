@@ -93,3 +93,7 @@ type CursorResponse<T,C> = {
   messages: T[],
   nextCursor: C | undefined
 }
+
+type Gender = "male" | "female";
+
+type AuthProvider = 'github' | 'google';
