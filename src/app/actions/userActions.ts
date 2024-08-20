@@ -78,6 +78,8 @@ export async function addImage(url: string, publicId: string): Promise<Member> {
 
 export async function setMainImage(photo: Photo) {
   try {
+    if(!photo.isApproved) throw new Error("Only approved photos can be set to main image");
+
     const userId = await getAuthUserId();
 
     await prisma.user.update({
@@ -136,7 +138,7 @@ export async function getUserInfoForNav() {
     const userId = await getAuthUserId();
     return await prisma.user.findUnique({ 
       where: { id: userId },
-      select: { name: true, image: true } 
+      select: { name: true, image: true, role: true } 
     });   
   } catch(e) {
     console.log(e);

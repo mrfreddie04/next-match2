@@ -83,14 +83,19 @@ export async function getMemberByUserId(userId: string): Promise<Member | null> 
 
 export async function getMemberPhotosByUserId(userId: string): Promise<Photo[] | null> {
   try {
+    const currentUserId = await getAuthUserId();
+    const whereCond = currentUserId === userId ? {} : { isApproved: true };
+
     const member = await prisma.member.findUnique({ 
       where: { userId: userId },
-      select: { photos: true } 
+      select: { photos: {
+        where: whereCond
+      }} 
     });   
+
     if(!member) return null;
     await delay(500);
-    return member.photos; //extract array of protos from the member object
-    //return member.photos.map( photo => photo) as Photo[];
+    return member.photos; //extract array of protos from the member object  
   } catch(e) {
     console.log(e);
     return null;

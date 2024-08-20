@@ -9,10 +9,23 @@ import { auth } from '@/auth';
 import UserMenu from './UserMenu';
 import { getUserInfoForNav } from '@/app/actions/userActions';
 import FiltersWrapper from './FiltersWrapper';
+import { Role } from '@prisma/client';
 
 export default async function TopNav() {
   const session = await auth();
   const userInfo = session?.user && await getUserInfoForNav();
+
+  const memberLinks = [
+    { label: "Matches", href: "/members"},
+    { label: "Lists", href: "/lists"},
+    { label: "Messages", href: "/messages"},
+  ];
+
+  const adminLinks = [
+    { label: "Photo Moderation", href: "/admin/moderation"},
+  ]  
+
+  const links = userInfo?.role === Role.ADMIN ? adminLinks : memberLinks;
   
   return (
     <>
@@ -29,9 +42,9 @@ export default async function TopNav() {
           </div>        
         </NavbarBrand>
         <NavbarContent justify="center">
-          <NavLink label="Matches" href="/members"/>
-          <NavLink label="Lists" href="/lists"/>
-          <NavLink label="Messages" href="/messages"/>
+        {links.map( item => (
+          <NavLink key={item.href} label={item.label} href={item.href} />
+        ))}  
         </NavbarContent>      
         <NavbarContent justify="end">
           { userInfo ? <UserMenu userInfo={userInfo}/> : (

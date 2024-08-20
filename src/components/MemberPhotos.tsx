@@ -26,6 +26,10 @@ export default function MemberPhotos({photos, editing, mainImageUrl}: Props) {
 
   const onSetMain = async (photo: Photo) => {
     if(photo.url === mainImageUrl) return;
+    if(!photo.isApproved) {
+      toast.error("Only approved photos can be set to main image");
+      return;
+    }
     setLoading({type: 'main', isLoading: true, id: photo.id});
     try {
       await setMainImage(photo);
@@ -63,7 +67,10 @@ export default function MemberPhotos({photos, editing, mainImageUrl}: Props) {
           <MemberImage photo={photo}/>
           { editing && (
             <>
-              <div onClick={() => onSetMain(photo)} className='absolute top-3 left-3 z-50'>
+              <div 
+                onClick={() => onSetMain(photo)} 
+                className='absolute top-3 left-3 z-50'
+              >
                 <StarButton 
                   loading={loading.isLoading && loading.type === 'main' && loading.id === photo.id} 
                   selected={mainImageUrl === photo.url}

@@ -28,7 +28,8 @@ async function seedMembers() {
             create: [{
               url: member.image,
               createdAt: new Date(member.created),
-              updatedAt: new Date(member.lastActive),              
+              updatedAt: new Date(member.lastActive),    
+              isApproved: true          
             }]
           }
         }
@@ -37,9 +38,21 @@ async function seedMembers() {
   }));
 }  
 
+async function seedAdmin() {
+  return prisma.user.create({
+    data: {
+      name: "Admin",
+      email: "admin@test.com", 
+      emailVerified: new Date(),
+      passwordHash: await bcrypt.hash("password", 10),
+      role: "ADMIN"
+    }      
+  });  
+}  
+
 async function main() {
-  //const x = seedMembers();
   await seedMembers();
+  await seedAdmin();
   //await Promise.all(seedMembers());
 }
 

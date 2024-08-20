@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useCallback, useEffect, useRef } from 'react';
+import { SessionProvider } from 'next-auth/react';
 import { NextUIProvider } from "@nextui-org/react";
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -38,9 +39,11 @@ export default function Providers({children, userId, profileComplete}: Props) {
   useNotificationChannel(userId, profileComplete);
 
   return (
-    <NextUIProvider>
-      <ToastContainer position='bottom-right' className='z-50' hideProgressBar/>
-      {children}
-    </NextUIProvider>
+    <SessionProvider>
+      <NextUIProvider>
+        <ToastContainer position='bottom-right' className='z-50' hideProgressBar/>
+        {children}
+      </NextUIProvider>
+    </SessionProvider>
   )
 }

@@ -239,6 +239,15 @@ export async function getAuthUserId() {
   return userId;
 }
 
+export async function getUserRole() {
+  const session = await auth();
+  const role = session?.user.role;
+
+  if(!role) throw new Error("Not in role");
+
+  return role;
+}
+
 export async function verifyEmail(token: string): Promise<ActionResult<string>> {
   try {
 

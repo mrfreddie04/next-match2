@@ -3,6 +3,7 @@
 import { signOutUser } from '@/app/actions/authActions';
 import { transformImageUrl } from '@/lib/utils';
 import { Avatar, Button, Dropdown, DropdownItem, DropdownMenu, DropdownSection, DropdownTrigger } from '@nextui-org/react';
+import { Role } from '@prisma/client';
 //import { Session } from 'next-auth';
 import Link from 'next/link';
 import React from 'react';
@@ -10,21 +11,24 @@ import React from 'react';
 type Props = {
   userInfo: {
     name: string | null,
-    image: string | null
+    image: string | null,
+    role: Role
   } | null //Session["user"]
 }
 
 export default function UserMenu({userInfo}: Props) {
+
   return (
     <Dropdown placement='bottom-end'>
       <DropdownTrigger>
         <Avatar 
           isBordered
-          as={Button}
+          as='button'
           className='transition-transform'
           color='secondary'
           name={userInfo?.name || "user avatar"}
           size='sm'
+          radius="full"
           src={transformImageUrl(userInfo?.image) || "/images/user.png"}
         />        
       </DropdownTrigger>
