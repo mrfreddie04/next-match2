@@ -1,7 +1,7 @@
 'use server';
 
 import { prisma } from "@/lib/prisma";
-import { delay } from "@/lib/utils";
+//import { delay } from "@/lib/utils";
 import { GetMemberParams, PaginatedResponse } from "@/types";
 import { Member, Photo } from "@prisma/client";
 import { addYears } from "date-fns";
@@ -33,7 +33,7 @@ export async function getMembers({
     const take = parseInt(pageSize!);
     const skip = (page - 1) * take;
 
-    await delay(500);
+    //await delay(500);
 
     const whereObj = { 
       userId: { not: userId },
@@ -72,7 +72,7 @@ export async function getMembers({
 
 export async function getMemberByUserId(userId: string): Promise<Member | null> {
   try {
-    await delay(500);
+    //await delay(500);
     //console.log("GMBI");
     return await fetchMemberByUserId(userId);
   } catch(e) {
@@ -94,7 +94,7 @@ export async function getMemberPhotosByUserId(userId: string): Promise<Photo[] |
     });   
 
     if(!member) return null;
-    await delay(500);
+    //await delay(500);
     return member.photos; //extract array of protos from the member object  
   } catch(e) {
     console.log(e);

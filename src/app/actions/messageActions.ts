@@ -5,7 +5,7 @@ import { MessageSchema, messageSchema } from "@/lib/schemas/messageSchema";
 import { ActionResult, MessageDto, MessageWithSenderRecipient, MessageContainer, CursorResponse } from "@/types";
 import { getAuthUserId } from "./authActions";
 import { mapMessageToMessageDto } from "@/lib/mappings";
-import { createChatId, delay } from "@/lib/utils";
+import { createChatId } from "@/lib/utils";
 import { EVENT_MESSAGE_NEW, EVENT_MESSAGES_READ, pusherServer } from "@/lib/pusher";
 
 const messageSelect = {
@@ -204,7 +204,7 @@ export async function deleteMessage(messageId: string, isOutbox: boolean) {
       })
     }
 
-    await delay(1000);
+    //await delay(1000);
 
   } catch(e) {
     console.log(e);

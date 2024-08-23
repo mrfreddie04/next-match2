@@ -5,7 +5,7 @@ import { prisma } from "@/lib/prisma";
 import { MemberEditSchema, memberEditSchema } from "@/lib/schemas/memberEditSchema";
 import { ActionResult } from "@/types";
 import { Member, Photo } from "@prisma/client";
-import { delay } from "@/lib/utils";
+//import { delay } from "@/lib/utils";
 import { getAuthUserId } from "./authActions";
 
 export async function updateMemberProfile(data: MemberEditSchema, nameUpdated: boolean): Promise<ActionResult<Member>> {
@@ -100,7 +100,7 @@ export async function setMainImage(photo: Photo) {
       data: { image: photo.url}
     });
     
-    await delay(500);
+    //await delay(500);
 
     return member;
   } catch(e) {

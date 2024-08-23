@@ -1,11 +1,12 @@
 import React from 'react';
 import { getMemberPhotosByUserId } from '@/app/actions/memberActions';
-import { CardBody, CardHeader, Divider, Image } from '@nextui-org/react';
+import { CardBody, CardHeader, Divider } from '@nextui-org/react';
+import MemberPhotos from '@/components/MemberPhotos';
 
 type Props = {
   params: {
     userId: string
-  }
+  }         
 }  
 
 export default async function MemberPhotosPage({params}: Props) {
@@ -19,20 +20,7 @@ export default async function MemberPhotosPage({params}: Props) {
       </CardHeader>
       <Divider />
       <CardBody>
-        <div className="grid grid-cols-5 gap-3">
-          {photos && photos.map( photo => (
-            <div key={photo.id}>
-              <Image  
-                isZoomed
-                alt="Image of member"
-                width={200}
-                height={200}
-                src={photo.url}
-                className='aspect-square object-cover'
-              />
-            </div>
-          ))}
-        </div>
+      <MemberPhotos photos={photos} />
       </CardBody>      
     </>
   );

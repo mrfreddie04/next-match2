@@ -1,10 +1,10 @@
 'use server';
 
 import { prisma } from "@/lib/prisma";
-import { delay } from "@/lib/utils";
-import { Member, Like } from "@prisma/client";
+//import { delay } from "@/lib/utils";
+//import { Member, Like } from "@prisma/client";
 import { getAuthUserId } from "./authActions";
-import { LikeDto, LikeType } from "@/types";
+import { LikeDto } from "@/types";
 import { EVENT_LIKE_NEW, pusherServer } from "@/lib/pusher";
 
 export async function toggleLikeMember(targetUserId: string, isLiked: boolean) {

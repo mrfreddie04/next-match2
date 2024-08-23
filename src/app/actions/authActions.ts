@@ -6,7 +6,7 @@ import { ProfileSchema, RegisterSchema, profileSchema, registerSchema, userDetai
 import { prisma } from "@/lib/prisma";
 import { TokenType, User } from "@prisma/client";
 import { ActionResult } from "@/types";
-import { delay } from "@/lib/utils";
+//import { delay } from "@/lib/utils";
 import { LoginSchema, loginSchema } from "@/lib/schemas/loginSchema";
 import { auth, signIn, signOut } from "@/auth";
 import { generateToken, getTokenByToken } from "@/lib/tokens";
@@ -71,7 +71,7 @@ export async function registerUser(data: RegisterSchema): Promise<ActionResult<U
     const verificationToken = await generateToken(email, TokenType.VERIFICATION);
     await sendVerificationEmail(verificationToken.email, verificationToken.token);
 
-    await delay(500);
+    //await delay(500);
   
     return {
       status: "success",

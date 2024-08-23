@@ -1,7 +1,9 @@
 import React from 'react';
 import ListsTab from './ListsTab';
 import { getCurrentUserLikeIds, getCurrentUserLikedMembers } from '../actions/likeActions';
-import { LikeType } from '@/types';
+//import { LikeType } from '@/types';
+
+export const dynamic = 'force-dynamic';
 
 type Props = {
   searchParams: {

@@ -5,6 +5,7 @@ import { prisma } from "./lib/prisma";
 import { Role } from "@prisma/client";
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
+  // @ts-ignore
   adapter: PrismaAdapter(prisma),
   callbacks: {
     jwt: async({token, user}) => {

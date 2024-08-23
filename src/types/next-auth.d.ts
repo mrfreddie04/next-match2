@@ -16,12 +16,12 @@ declare module "next-auth" {
 }
 
 //declare module "@auth/prisma-adapter" {
-declare module "@auth/core/adapters" {
-  interface AdapterUser {
-    profileComplete: boolean;
-    role: Role;
-  }
-}
+// declare module "@auth/core/adapters" {
+//   interface AdapterUser {
+//     profileComplete: boolean;
+//     role: Role;
+//   }
+// }
 
 declare module 'next-auth/jwt' {
   interface JWT {
